@@ -1,0 +1,66 @@
+ensemble:
+  name: null
+feature:
+- name: NormalizeFeatures
+hpo:
+  max_evals: 20
+  name: random
+models:
+- hp_space:
+  - value: 5
+    parameterName: num_layers
+    type: FIXED
+  - parameterName: hidden
+    type: FIXED
+    value: [256, 256, 256, 256]
+  - value: [0.2, 0.2, 0.2, 0.2, 0.6]
+    parameterName: dropout
+    type: FIXED
+  - value: elu
+    parameterName: act
+    type: FIXED
+  - parameterName: add_self_loops
+    type: FIXED
+    value: 0
+  - parameterName: normalize
+    type: FIXED
+    value: 0
+  name: gcn-model
+trainer:
+  name: NodeClassificationLayerDependentImportanceSamplingTrainer
+  hp_space:
+  - parameterName: sampled_node_sizes
+    type: FIXED
+    value: [512, 512, 512, 512, 512]
+  - maxValue: 128
+    minValue: 64
+    parameterName: max_epoch
+    scalingType: LINEAR
+    type: INTEGER
+  - maxValue: 12
+    minValue: 6
+    parameterName: early_stopping_round
+    scalingType: LOG
+    type: INTEGER
+  - parameterName: training_batch_size
+    type: FIXED
+    value: 512
+  - parameterName: predicting_batch_size
+    type: FIXED
+    value: 1024
+  - parameterName: training_sampler_num_workers
+    type: FIXED
+    value: 0
+  - parameterName: predicting_sampler_num_workers
+    type: FIXED
+    value: 0
+  - maxValue: 0.001
+    minValue: 0.0005
+    parameterName: lr
+    scalingType: LOG
+    type: DOUBLE
+  - maxValue: 0
+    minValue: 0
+    parameterName: weight_decay
+    scalingType: LINEAR
+    type: DOUBLE
