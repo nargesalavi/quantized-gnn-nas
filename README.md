@@ -22,6 +22,10 @@ Similarly, for graph classification tasks, set --task to 'graph' and choose your
 
 `!python main.py --task 'graph' --dataset 'IMDB-MULTI'`
 
+## Quantization directly on DARTS
+
+To apply quantization on DARTS, we needed to first make it compatible with GNN, the associated code can be found in 
+
 
 
 
