@@ -1,7 +1,7 @@
 # quantized-gnn-nas (GraQNAS)
 
 This work is on quantization for GNN-based NAS. 
-Actively under development by @nargesalavi and MohamadAli Seyed Mahmoud
+Actively under development by @[nargesalavi](https://github.com/nargesalavi). and MohamadAli Seyed Mahmoud
 
 GraQNAS is developed for researchers and developers to conduct quantization on neural architecture search for graph datasets and tasks easily and quickly. 
 
