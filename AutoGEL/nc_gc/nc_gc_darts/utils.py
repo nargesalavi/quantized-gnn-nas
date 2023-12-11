@@ -18,6 +18,25 @@ from torch_geometric.data import DataLoader, Data
 from collections import Counter
 from sklearn.model_selection import train_test_split
 from log import *
+from torchsummary import summary
+
+import torch.quantization
+
+def quantize_model(model, representative_data_loader):
+    model.eval()
+    model.qconfig = torch.quantization.get_default_qconfig('fbgemm')
+    model_prepared = torch.quantization.prepare(model, inplace=False)
+
+    # Calibrate the model
+    with torch.no_grad():
+        for batch in representative_data_loader:
+            model_prepared(*batch)
+
+    quantized_model = torch.quantization.convert(model_prepared, inplace=False)
+    return quantized_model
+
+# representative_data_loader should be a DataLoader that yields batches
+# of data that are representative of what the model will see in deployment
 
 
 def check(args):
@@ -118,7 +137,8 @@ def get_data(args, logger):
     if args.task == 'node':
         dataset = Planetoid(root='./data/' + args.task + '/' + args.dataset, name=args.dataset)
     elif args.task == 'graph':
-        dataset = TUDataset(root='./data/' + args.task + '/' + args.dataset, name=args.dataset)
+        # Initialize the dataset
+        dataset = TUDataset(root='./data/TUDataset', name=args.dataset)
     else:
         raise NotImplementedError
     # in_features = dataset.num_node_features
@@ -155,6 +175,7 @@ def get_model(layers, in_features, out_features, args, logger):
     else:
         return NotImplementedError
     logger.info(model.short_summary())
+    
     return model
 
 

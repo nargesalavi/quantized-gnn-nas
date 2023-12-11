@@ -4,7 +4,15 @@ import time
 
 criterion = torch.nn.functional.cross_entropy
 # criterion = torch.nn.MultiLabelSoftMarginLoss
+def print_model_summary(model):
+    print("Model Summary:")
+    for layer in model.modules():
+        print(layer)
 
+    total_params = sum(p.numel() for p in model.parameters())
+    total_mem = total_params*4/1000
+    total_mem_q = total_params/1000
+    print(f"***Total parameters: {total_params} required Memory:{total_mem}KB , quantized required memory {total_mem_q}KB ")
 
 def search(model, train_loader, val_loader, train_mask, val_mask, args, logger):
     start = time.time()
@@ -73,27 +81,38 @@ def search(model, train_loader, val_loader, train_mask, val_mask, args, logger):
 
 def retrain(model, train_loader, test_loader, train_mask, test_mask, args, logger):
     device = get_device(args)
+    # model = torch.ao.quantization.quantize_dynamic(
+    #     model_,  # the original model
+    #     {torch.nn.Linear},  # a set of layers to dynamically quantize
+    #     dtype=torch.qint8  # target data type for quantization
+    #   )
     model.derive_arch()
 
     logger.info('Derived z')
     logger.info(model.searched_arch_z)
     logger.info('Derived arch')
     logger.info(model.searched_arch_op)
+    # for name, module in model_.named_modules():
+    #   if isinstance(module, torch.nn.modules.conv._ConvNd):
+    #       torch.nn.utils.remove_weight_norm(module)
 
+    # model = quantize_model(model_, test_loader)
     def weight_reset(m):
         reset_parameters = getattr(m, "reset_parameters", None)
         if callable(reset_parameters):
             m.reset_parameters()
     model.apply(weight_reset)
     model.to(device)
-
+    
     # train_loader, val_loader, test_loader = dataloaders
     optimizer = get_optimizer(model, args)
     metric = args.metric
     #     recorder = Recorder(metric)
     recorder = RetrainRecorder(metric)
+   
     for step in range(args.retrain_epoch):
         optimize_model(model, train_loader, train_mask, optimizer, device, args)
+
         train_loss, train_acc, train_auc = eval_model(model, train_loader, train_mask, device, args, split='train')
         # test_loss, test_acc, test_auc = eval_model(model, test_loader, test_mask, device, args, split='val')
         test_loss, test_acc, test_auc = eval_model(model, test_loader, test_mask, device, args, split='test')
@@ -112,6 +131,7 @@ def retrain(model, train_loader, test_loader, train_mask, test_mask, args, logge
     results, max_step = recorder.get_best_metric()
     model.max_step = max_step
     model.best_metric_retrain = results
+    
     return model, results
 
 

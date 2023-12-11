@@ -64,10 +64,14 @@ def main():
         in_features, out_features, train_mask, val_mask, test_mask, train_loader, val_loader, test_loader = helper_ppi(args)
 
     model = get_model(layers=args.layers, in_features=in_features, out_features=out_features, args=args, logger=logger)
+    model.eval()
 
+    # Specify the quantization configuration
     model, results = search(model, train_loader, val_loader, train_mask, val_mask, args, logger)
+    # model = quantize_model(model, 8)
+    
     model, results = retrain(model, train_loader, test_loader, train_mask, test_mask, args, logger)
-
+    print_model_summary(model)
     save_performance_result(args, logger, model)
 
 
