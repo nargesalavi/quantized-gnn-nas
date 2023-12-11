@@ -26,6 +26,7 @@ Similarly, for graph classification tasks, set --task to 'graph' and choose your
 
 To apply quantization on DARTS, we needed to first make it compatible with GNN, the associated code can be found in darts_2/darts/gnn although it requires more editing to make it executable. Note that prior works have shown that using DARTS to desing GNNs is not effective enough because of the sensitivity of GNNs to the data and the noise of the data.
 
+For mannual GNNs, the experiemtns are in quantized-gnn-nas/docs/tutorial_notebooks/tutorial7/GNN_overview.ipynb
 
 
 
