@@ -7,7 +7,8 @@ AutoGL is developed for researchers and developers to conduct quantization on ne
 
 ## Running GraQNAS
 
-The notebook 
+The notebook in quantized-gnn-nas/graph_nas.ipynb contains the required packages and experiments that are needed for running AutoGEL and finding its best test accuracy along with its number of parameters and their required memory compared with the ones needed for GraQNAS.
+
 
 
 
